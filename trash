@@ -1,6 +1,9 @@
-# A safe alternative to rm/rmdir, it can be called with any number of arguments:
-# $ trash index.html style scripts package.json
-# It will rename duplicate file/directories using the Mac OS convention of inserting/appending the time the duplicate resource was deleted.
+#!/usr/bin/env bash
+# Author: Darren Klein https://github.com/darrenklein
+
+# A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
+# $ trash index.html scr scripts README.md
+# It will rename duplicate file/directories using the macOS convention of inserting/appending the time the duplicate resource was deleted.
 trash () {
     trash_content=$(ls ~/.Trash); # Put the contents of the trash into an array.
     time=$(date "+%-I.%M.%S %p"); # Format the time like 9.32.16 PM - the "-" trims the leading 0.
