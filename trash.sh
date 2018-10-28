@@ -5,7 +5,7 @@ trash () {
     trash_content=$(ls ~/.Trash); # Put the contents of the trash into an array.
     time=$(date "+%-I.%M.%S %p"); # Format the time like 9.32.16 PM - the "-" trims the leading 0.
     handle_move() {
-        mv -fv "$1" ~/.Trash/"$2"
+        mv -fv "$1" ~/.Trash/"$2";
     }
 
     for item in "$@"; do
