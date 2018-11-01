@@ -1,6 +1,3 @@
-# TODO - this works better now with the conditional renaming of item, the issue now is with the conditional
-# if [[ "${trash_content[@]}" =~ "${item}" ]], which seems to match on partial matches - index.html and x.html, for example.
-
 # A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
 # $ trash index.html scr scripts README.md
 # It will rename duplicate file/directories using the macOS convention of inserting/appending the time the duplicate resource was deleted.
@@ -18,7 +15,8 @@ trash () {
         # If we've found a matching file/directory name in the trash, we'll append/insert the time.
         # If the target is a directory, simply append the time to the end of the name, i.e. "files 9.32.16 PM"
         # If it is a file, inject the time into the name, before the file extension, i.e. "index 9.32.16 PM.html"
-        if [[ "${trash_content[@]}" =~ "${item}" ]]; then
+        # Conditional borrowed from https://stackoverflow.com/questions/20129920/check-if-exact-word-exists-in-an-array
+        if [ $(echo "$trash_content" | sed "s:.*/::" | grep "^$item\$") ]; then
             if [[ -d "$item" ]]; then
                 handle_move "$item" "${item} ${time}";
             else
