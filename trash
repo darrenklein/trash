@@ -17,10 +17,10 @@ trash () {
         # If it is a file, inject the time into the name, before the file extension, i.e. "index 9.32.16 PM.html"
         # Conditional borrowed from https://stackoverflow.com/questions/20129920/check-if-exact-word-exists-in-an-array
         if [ $(echo "$trash_content" | sed "s:.*/::" | grep "^$item\$") ]; then
-            if [[ -d "$item" ]]; then
+            # Use the same naming strategy for directories and files with no extension.
+            if [[ -d "$item" || "$item" != "." ]]; then
                 handle_move "$item" "${item} ${time}";
             else
-                # TODO - file names won't necessarily always have an extension, so first check to see if there is one.
                 name="${item%.*}";
                 extension="${item##*.}";
                 handle_move "$item" "${name} ${time}.${extension}";
