@@ -1,7 +1,5 @@
 # trash
-> A safe alternative to `rm` & `rmdir`
-
-**This script has only been tested on macOS**
+> A safe alternative to `rm` & `rmdir` for macOS (and maybe more)
 
 As many folks know, `rm` and `rmdir` can be dangerous because of the fact that they hard-delete files and directories, rather than sending them to the trash bin - `trash` is my take on a remedy for this "problem", moving files and folders into the trash bin instead.
 
@@ -11,7 +9,15 @@ For example, if you move two files named "index.html" into the trash, the defaul
 
 ## Installation
 
-Coming soon...
+Until I finish writing `install.sh`, you'd want to copy the contents of `trash` into a script named "trash" located in `usr/local/bin`.
+
+Make the file executable by running
+
+```bash
+chmod a+x usr/local/bin/trash
+```
+
+and make sure `usr/local/bin` is in your bash `$PATH`.
 
 ## Use
 
