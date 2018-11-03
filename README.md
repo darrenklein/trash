@@ -34,5 +34,5 @@ As I am inexperienced at writing bash scripts, I would be very happy for any con
 ## TODO
 
 - Write an installation script.
+- handle scenarios where two files/dirs with the same name but from different locations are trashed.
 - provide a warning if no file/dir arguments have been specified
-- check the system for the clock type - 12- or 24-hour - and set the time accoringly (currently defaults to 12-hour)
