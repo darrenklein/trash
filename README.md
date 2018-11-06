@@ -34,6 +34,11 @@ As I am inexperienced at writing bash scripts, I would be very happy for any con
 ## TODO
 
 - Write an installation script.
-- handle scenarios where two files/dirs with the same name but from different locations are trashed. When dealing with a dir named "x" and a file named "x", macOS will actually treat them as though they were both the same type - as in, it'll append the time to whichever came in second. For the most part, that's already working here. Things fall apart a little when trying to trash two same-named items from different locations - `$ trash x y/x`, where the first arg is a dir and the second is a file will result in `mv: rename y/x to /Users/username/.Trash/x: Is a directory`.
-- In the case of same-named files/dirs from different locations (when both of the same type), the first will get overwritten by the last.
-- provide a warning if no file/dir arguments have been specified
+- When trying to trash two same-named items of different types, there's a naming issue. For example, you have a dir `x` and a dir `y`; the latter has a file in it named `x`. Running `trash x y/x` will result in
+```
+x -> /Users/username/.Trash/x 12.44.34 PM
+y/x -> /Users/username/.Trash/x 12.44.34 PM/x
+```
+if there's already an item named `x` in the trash.
+
+- provide a warning if no file/dir arguments have been specified - this is a place for a usage() function...
