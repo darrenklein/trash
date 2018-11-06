@@ -9,6 +9,30 @@ For example, if you move two files named "index.html" into the trash, the defaul
 
 ## Installation
 
+Install this script from the cloned Github repo:
+
+- Clone the repo
+
+```bash
+git clone https://github.com/darrenklein/trash
+```
+
+- `cd` into the clone
+
+```bash
+cd trash
+```
+
+- Run the installation script
+
+```bash
+sh ./install.sh
+```
+
+**trash** will be installed in `usr/local/bin`.
+
+
+
 Until I finish writing `install.sh`, you'd want to copy the contents of `trash` into a script named "trash" located in `usr/local/bin`.
 
 Make the file executable by running
@@ -31,6 +55,6 @@ trash index.html scr scripts README.md
 
 As I am inexperienced at writing bash scripts, I would be very happy for any contributions to this project that improve its reliability, versatility, and cross-platform support.
 
-## TODO
+## Notes
 
-- Write an installation script.
+Big thanks to Alexander Epstein - https://github.com/alexanderepstein - whose BashSnippets helped to guide the structure of this project (it's my first bash script!).

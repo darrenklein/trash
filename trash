@@ -4,33 +4,46 @@
 
 # A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
 # $ trash index.html scr scripts README.md
-# It will rename duplicate file/directories using the macOS convention of inserting/appending the # time the duplicate resource was deleted.
+# It will rename duplicate file/directories using the macOS convention of inserting/appending the time the duplicate resource was deleted.
 
-# trash_content=$(ls ~/.Trash); # Put the contents of the trash into an array.
-time=$(date "+%-I.%M.%S %p"); # Format the time like 9.32.16 PM - the "-" trims the leading 0.
+usage="usage: trash source1 source2 ... sourceN"
+time=$(date "+%-I.%M.%S %p"); # format the time like 9.32.16 PM - the "-" trims the leading 0.
 handle_move() {
-    mv -fv "$1" ~/.Trash/"$2";
+    # Now that we may have appended/inserted the time, check to make sure there's no duplicate of that, either.
+    # If there is, append its argument index as a final unique identifier.
+    if [[ $(echo "$3" | sed "s:.*/::" | grep "^${2}\$") ]]; then
+        mv -fv "$1" ~/.Trash/"$2 ($4)";
+    else
+        mv -fv "$1" ~/.Trash/"$2";
+    fi
 }
 
-for item in "$@"; do
-    item=$(([ -d "$item" ] && [ "${item: -1}" == / ]) && echo "${item%?}" || echo "${item}"); # If the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
-    basename=$(basename "$item"); # Get the basename of the the item.
-    trash_content=$(ls ~/.Trash); # Put the contents of the trash into an array.
+if [ "$#" == "0" ]; then
+    echo "$usage"
+    exit 1
+fi
 
-    # If we've found a matching file/directory name in the trash, we'll append/insert the time.
+while (( "$#" )); do
+    trash_content=$( ls ~/.Trash ); # put the contents of the trash into an array.
+    source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ); # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
+    basename=$( basename "$source" ); # for comparing file/dir names, use the basename.
+
+    # # If we've found a matching file/directory name in the trash, we'll append/insert the time.
     # If the target is a directory, simply append the time to the end of the name, i.e. "files 9.32.16 PM"
     # If it is a file, inject the time into the name, before the file extension, i.e. "index 9.32.16 PM.html"
     # Conditional borrowed from https://stackoverflow.com/questions/20129920/check-if-exact-word-exists-in-an-array
     if [ $(echo "$trash_content" | sed "s:.*/::" | grep "^$basename\$") ]; then
         # Use the same naming strategy for directories and files with no extension.
-        if [[ -d "$item" || "$item" != *"."* ]]; then
-            handle_move "$item" "${basename} ${time}";
+        if [[ -d "$source" || "$source" != *"."* ]]; then
+            handle_move "$source" "${basename} ${time}" "$trash_content" "$#";
         else
-            name="${item%.*}";
-            extension="${item##*.}";
-            handle_move "$item" "${name} ${time}.${extension}";
+            name="${source%.*}";
+            extension="${source##*.}";
+            handle_move "$source" "${name} ${time}.${extension}" "$trash_content" "$#";
         fi
     else
-        handle_move "$item";
+        handle_move "$source";
     fi
+
+    shift
 done
