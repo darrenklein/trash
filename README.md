@@ -34,11 +34,3 @@ As I am inexperienced at writing bash scripts, I would be very happy for any con
 ## TODO
 
 - Write an installation script.
-- When trying to trash two same-named items of different types, there's a naming issue. For example, you have a dir `x` and a dir `y`; the latter has a file in it named `x`. Running `trash x y/x` will result in
-```
-x -> /Users/username/.Trash/x 12.44.34 PM
-y/x -> /Users/username/.Trash/x 12.44.34 PM/x
-```
-if there's already an item named `x` in the trash.
-
-- provide a warning if no file/dir arguments have been specified - this is a place for a usage() function...
