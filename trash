@@ -10,7 +10,7 @@ usage="usage: trash source1 source2 ... sourceN"
 time=$(date "+%-I.%M.%S %p") # format the time like 9.32.16 PM - the "-" trims the leading 0.
 trashed_items=()
 handle_move() {
-    # Now that we may have appended/inserted the time, check to make sure there's no duplicate of that, either.
+    # Now that we may have appended/inserted the time, check to make sure there's no duplicate of that, either, by checking against all of the items trashed in this action.
     # If there is, append its argument index as a final unique identifier.
     if [[ $(echo "$trashed_items" | sed "s:.*/::" | grep "^${2}\$") ]]; then
         mv -fv "$1" ~/.Trash/"$2 ($3)"
