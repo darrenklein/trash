@@ -7,15 +7,18 @@
 # It will rename duplicate file/directories using the macOS convention of inserting/appending the time the duplicate resource was deleted.
 
 usage="usage: trash source1 source2 ... sourceN"
-time=$(date "+%-I.%M.%S %p"); # format the time like 9.32.16 PM - the "-" trims the leading 0.
+time=$(date "+%-I.%M.%S %p") # format the time like 9.32.16 PM - the "-" trims the leading 0.
+trashed_items=()
 handle_move() {
     # Now that we may have appended/inserted the time, check to make sure there's no duplicate of that, either.
     # If there is, append its argument index as a final unique identifier.
-    if [[ $(echo "$3" | sed "s:.*/::" | grep "^${2}\$") ]]; then
-        mv -fv "$1" ~/.Trash/"$2 ($4)";
+    if [[ $(echo "$trashed_items" | sed "s:.*/::" | grep "^${2}\$") ]]; then
+        mv -fv "$1" ~/.Trash/"$2 ($3)"
     else
-        mv -fv "$1" ~/.Trash/"$2";
+        mv -fv "$1" ~/.Trash/"$2"
     fi
+
+    trashed_items+=("$2")
 }
 
 if [ "$#" == "0" ]; then
@@ -24,9 +27,9 @@ if [ "$#" == "0" ]; then
 fi
 
 while (( "$#" )); do
-    trash_content=$( ls ~/.Trash ); # put the contents of the trash into an array.
-    source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ); # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
-    basename=$( basename "$source" ); # for comparing file/dir names, use the basename.
+    trash_content=$( ls ~/.Trash ) # put the contents of the trash into an array.
+    source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ) # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
+    basename=$( basename "$source" ) # for comparing file/dir names, use the basename.
 
     # # If we've found a matching file/directory name in the trash, we'll append/insert the time.
     # If the target is a directory, simply append the time to the end of the name, i.e. "files 9.32.16 PM"
@@ -35,14 +38,14 @@ while (( "$#" )); do
     if [ $(echo "$trash_content" | sed "s:.*/::" | grep "^$basename\$") ]; then
         # Use the same naming strategy for directories and files with no extension.
         if [[ -d "$source" || "$source" != *"."* ]]; then
-            handle_move "$source" "${basename} ${time}" "$trash_content" "$#";
+            handle_move "$source" "${basename} ${time}" "$#"
         else
-            name="${source%.*}";
-            extension="${source##*.}";
-            handle_move "$source" "${name} ${time}.${extension}" "$trash_content" "$#";
+            name="${source%.*}"
+            extension="${source##*.}"
+            handle_move "$source" "${name} ${time}.${extension}" "$#"
         fi
     else
-        handle_move "$source";
+        handle_move "$source"
     fi
 
     shift
