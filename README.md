@@ -48,3 +48,7 @@ As I am inexperienced at writing bash scripts, I would be very happy for any con
 ## Big ups
 
 Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project (it's my first bash script!).
+
+## TODO
+
+- is there a better way to handle the unique trailing numbers in the affirmative conditional of handle_move()?
