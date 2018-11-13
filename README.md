@@ -51,4 +51,5 @@ Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **Bash
 
 ## TODO
 
+- when comparing file/dir names, note that you should downcase both for comparison - macOS will treach Repo/ and repo/ as having the same name...
 - is there a better way to handle the unique trailing numbers in the affirmative conditional of handle_move()?
