@@ -74,13 +74,14 @@ fi
 while (( "$#" )); do
     trash_content=$( ls ~/.Trash ) # put the contents of the trash into an array.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ) # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
-    basename=$( basename "$source" ) # for comparing file/dir names, use the basename.
-    lowercase_basename=$( basename "$source" | tr '[:upper:]' '[:lower:]' )
+    basename=$( basename "$source" )
+    lowercase_basename=$( echo "$basename" | tr '[:upper:]' '[:lower:]' ) # for comparing file/dir names, use the lowercased basename.
 
-    # # If we've found a matching file/directory name in the trash, we'll append/insert the time.
+    # If we've found a matching file/directory name in the trash, we'll append/insert the time.
     # If the target is a directory, simply append the time to the end of the name, i.e. "files 9.32.16 PM"
     # If it is a file, inject the time into the name, before the file extension, i.e. "index 9.32.16 PM.html"
     # Conditional borrowed from https://stackoverflow.com/questions/20129920/check-if-exact-word-exists-in-an-array
+    # Note that we lowercase the trash_content and compare it to the lowercased basename, so we're getting strict character comparison.
     if [ $(echo "$trash_content" | sed "s:.*/::" | tr '[:upper:]' '[:lower:]' | grep "^$lowercase_basename\$") ]; then
         # Use the same naming strategy for directories and files with no extension.
         if [[ -d "$source" || "$source" != *"."* ]]; then
