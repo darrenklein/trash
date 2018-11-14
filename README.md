@@ -5,7 +5,22 @@ As many folks know, `rm` and `rmdir` can be dangerous because of the fact that t
 
 While there's already a popular Homebrew-installable command line package available that achieves this same end - http://hasseg.org/trash/ - I wanted to make my own for the trivial reason of the fact that mine preserves the macOS-style of formatting duplicate file and directory names... and because I wanted to tinker with bash.
 
-If you move two files named "index.html" into the trash, the default macOS behavior is to rename the second file by inserting the time of the move prior to the extension - so "index.html" will become "index 3:42 PM.html", etc.; a duplicate directory will have the time appended to its name - "scripts" will become "scripts 3:42 PM".
+If you move two files named `index.html` into the trash, the default macOS behavior is to rename the second file by inserting the time of the move prior to the extension - so `index.html` will become `index 3:42 PM.html`, etc.; a duplicate directory will have the time appended to its name - `scripts` will become `scripts 3:42 PM`; files with no extensions follow this convention as well.
+
+I've also included my own twist, for the rare (but possible!) situation where you might want to move multiple items with the same name to the trash from different locations. In those instances, an additional trailing number will be appended to allow for unique identification. For example, running
+
+```bash
+trash index.html test_1/index.html test_2/index.html test_3/index.html
+```
+
+will result in the following trash content:
+
+```
+index.html
+index 3:45 PM.html
+index 3:45 PM.html (1)
+index 3:45 PM.html (2)
+```
 
 ## Installation
 
@@ -51,5 +66,4 @@ Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **Bash
 
 ## TODO
 
-- when comparing file/dir names, note that you should downcase both for comparison - macOS will treach Repo/ and repo/ as having the same name...
-- is there a better way to handle the unique trailing numbers in the affirmative conditional of handle_move()?
+- General refactoring.
