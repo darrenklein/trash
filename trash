@@ -25,10 +25,13 @@ trash_content=$( ls ~/.Trash ) # put the contents of the trash into an array.
 trashed_items=() # An empty array to hold items trashed during this execution.
 
 handle_move() {
+    lowercase_name=$( echo "$2" | tr "[:upper:]" "[:lower:]" )
+    lowercase_trashed_items=$( echo ${trashed_items[*]} | tr "[:upper:]" "[:lower:]" )
+
     # Count any duplicates in the batch of items that have been trashed during this operation;
     # for example, $ trash x a/x y/x z/x
     # This number will be appended to the modified file name as a unique identifier.
-    dup_count=$( grep -o "$2" <<< ${trashed_items[*]} | wc -l | tr -d "[:space:]" )
+    dup_count=$( grep -o "$lowercase_name" <<< "$lowercase_trashed_items" | wc -l | tr -d "[:space:]" )
 
     if [ "$dup_count" -gt 0 ]
     then

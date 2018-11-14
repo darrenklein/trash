@@ -67,14 +67,3 @@ Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **Bash
 ## TODO
 
 - General refactoring.
-- Here was a scenario where the naming didn't quite work out correctly:
-
-```
-x -> /Users/username/.Trash/x
-a/X -> /Users/username/.Trash/X 9.42.47 AM
-b/x -> /Users/username/.Trash/x 9.42.47 AM
-c/x -> /Users/username/.Trash/x 9.42.47 AM (1)
-d/x -> /Users/username/.Trash/x 9.42.47 AM (2)
-```
-
-Note that the uppercase 'X' didn't get counted as a duplicate when `b/x` was evaluated.
