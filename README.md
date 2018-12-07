@@ -67,3 +67,4 @@ Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **Bash
 ## TODO
 
 - General refactoring.
+- Support `.` arguments - `trash .`, etc.
