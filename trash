@@ -75,6 +75,8 @@ while (( "$#" )); do
     basename=$( basename "$source" )
     lowercase_basename=$( make_lowercase "$basename" ) # for comparing file/dir names, use the basename.
 
+    # First, check the array of items that have been successfully trashed in this transaction.
+    # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
     if [ $( echo $( make_lowercase "$trashed_items" | sed "s:.*/::" ) | grep "^$lowercase_basename\$" ) ]
     then
         if [[ -d "$source" || "$source" != *"."* ]]
@@ -86,7 +88,7 @@ while (( "$#" )); do
             handle_move "$source" "${name} ${time}.${extension}"
         fi
     else
-        if [ $( echo $( make_lowercase "$trashed_content" | sed "s:.*/::" ) | grep "^$lowercase_basename\$" ) ]
+        if [ $( echo $( make_lowercase "$trash_content" | sed "s:.*/::" ) | grep "^$lowercase_basename\$" ) ]
         then
             # Use the same naming strategy for directories and files with no extension.
             if [[ -d "$source" || "$source" != *"."* ]]
