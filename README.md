@@ -42,7 +42,7 @@ cd trash
 sh ./install.sh
 ```
 
-**trash** will be installed to `usr/local/bin`.
+**trash** will be installed to `usr/local/bin/trash`.
 
 Make sure `usr/local/bin` is in your bash `$PATH`!
 
@@ -54,6 +54,8 @@ From within a local copy of the **trash** git repo, you can uninstall the script
 sh ./uninstall.sh
 ```
 
+or you can just delete the file at `usr/local/bin/trash` directly.
+
 ## Use
 
 The `trash` command can be followed by any number of files/directories that you wish to move to the trash bin. For example:
@@ -64,4 +66,4 @@ trash index.html src scripts README.md
 
 ## Big ups
 
-Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project (it's my first bash script!).
+Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project.
