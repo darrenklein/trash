@@ -3,12 +3,12 @@
 # Github repo: https://github.com/darrenklein/trash
 
 # Adapted with thanks, from https://github.com/alexanderepstein/Bash-Snippets/blob/master/install.sh
-read -p "Do you wish to install trash? [Y/n]: " answer
+read -p "Install trash? [Y/n]: " answer
     answer=${answer:-Y}
 
     if [[ "$answer" == [Yy] ]]; then
         echo "Installing trash..."
         chmod a+x trash
-        cp trash /usr/local/bin > /dev/null 2>&1 || { echo "Failure"; echo "Error copying file, try running install script as sudo"; exit 1; }
-        echo "Success!"
+        cp trash /usr/local/bin > /dev/null 2>&1 || { echo "Failure!"; echo "Error copying file, try running install script as sudo."; exit 1; }
+        echo "Successfully installed trash - happy trashing!"
     fi
