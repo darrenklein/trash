@@ -67,3 +67,7 @@ trash index.html src scripts README.md
 ## Big ups
 
 Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project.
+
+## TODO
+
+- Handle item names with spaces.
