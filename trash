@@ -34,6 +34,13 @@ contains() {
     [[ "$1" =~ (^| )"$2"($| ) ]] && return 0 || return 1
 }
 
+#######################################################################################
+# Check to see if the target is a directory or a file with no extension
+#######################################################################################
+has_no_extension() {
+    [[ -d "$1" || "$1" != *"."* ]] && return 0 || return 1   
+}
+
 #########################################################
 # Move the target files/directories into the trash
 #########################################################
@@ -85,7 +92,8 @@ while (( "$#" )); do
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
     if contains "$lowercase_trashed_items" "$lowercase_basename";
     then
-        if [[ -d "$source" || "$source" != *"."* ]]
+        # if [[ -d "$source" || "$source" != *"."* ]]
+        if has_no_extension "$source";
         then
             handle_move "$source" "${basename} ${time}"
         else
@@ -97,7 +105,8 @@ while (( "$#" )); do
         if contains "$lowercase_trash_content" "$lowercase_basename";
         then
             # Use the same naming strategy for directories and files with no extension.
-            if [[ -d "$source" || "$source" != *"."* ]]
+            # if [[ -d "$source" || "$source" != *"."* ]]
+            if has_no_extension "$source";
             then
                 handle_move "$source" "${basename} ${time}"
             else
