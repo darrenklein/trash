@@ -67,8 +67,16 @@ handle_move() {
 usage="usage: trash source1 source2 ... sourceN"
 time=$(date "+%-I.%M.%S %p") # Format the time like 9.32.16 PM - the "-" trims the leading 0.
 trash_content=$( ls ~/.Trash ) # Put the contents of the trash into an array.
-lowercase_trash_content=$( echo $( make_lowercase "${trash_content[*]}" | sed "s:.*/::" ) ) # Lowercase everything in the trash, used when checking for the existence of an item in trash.
 trashed_items=() # An empty array to hold items trashed during this execution.
+lowercase_trash_content=()
+
+# Loop through the trash, lowercasing every item and wrapping it in single-quotes.
+for item in ~/.Trash/*; do
+    basename=$( basename "$item" )
+    lowercase_item=$( make_lowercase "$basename" )
+    lowercase_trash_content+=("'$lowercase_item'")
+done
+
 
 #########################################################
 # Usage - invoked when no arguments passed
@@ -92,7 +100,6 @@ while (( "$#" )); do
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
     if contains "$lowercase_trashed_items" "$lowercase_basename";
     then
-        # if [[ -d "$source" || "$source" != *"."* ]]
         if has_no_extension "$source";
         then
             handle_move "$source" "${basename} ${time}"
@@ -102,10 +109,8 @@ while (( "$#" )); do
             handle_move "$source" "${name} ${time}.${extension}"
         fi
     else
-        if contains "$lowercase_trash_content" "$lowercase_basename";
+        if [[ "${lowercase_trash_content[@]}" =~ (^| )"'$lowercase_basename'"($| ) ]];
         then
-            # Use the same naming strategy for directories and files with no extension.
-            # if [[ -d "$source" || "$source" != *"."* ]]
             if has_no_extension "$source";
             then
                 handle_move "$source" "${basename} ${time}"
