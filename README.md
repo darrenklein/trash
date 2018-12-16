@@ -71,3 +71,19 @@ Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **Bash
 ## TODO
 
 - Handle item names with spaces. For example, `touch "x x"`, `trash x\ x`, `touch x`, `trash x` will append a time to  the second x.
+
+by using
+
+```bash
+ltc=()
+
+for item in ~/.Trash/*; do
+    i=$( basename "$item" )
+    lci=$( make_lowercase "$i" )
+    ltc+=$"'$lci'"
+done
+```
+
+I can put single-quoted items into the `ltc` array.
+
+
