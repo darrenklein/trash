@@ -57,11 +57,13 @@ has_no_extension() {
 handle_name() {
     if has_no_extension "$1";
     then
-        handle_move "$1" "${2} ${time}"
+        # handle_move "$1" "${2} ${time}"
+        echo "${2} ${time}"
     else
         name="${2%.*}"
         extension="${2##*.}"
-        handle_move "$1" "${name} ${time}.${extension}"
+        # handle_move "$1" "${name} ${time}.${extension}"
+        echo "${name} ${time}.${extension}"
     fi   
 }
 
@@ -102,9 +104,9 @@ lowercase_trash_content=()
 # Loop through the trash, lowercasing every item and wrapping it in single-quotes.
 # Single quotes allow for item name comparisons where names may contain spaces.
 for item in ~/.Trash/*; do
-    basename=$( basename "$item" )
-    lowercase_item=$( make_lowercase "$basename" )
-    lowercase_trash_content+=("'$lowercase_item'")
+    name=$( basename "$item" )
+    lowercase_name=$( make_lowercase "$name" )
+    lowercase_trash_content+=("'$lowercase_name'")
 done
 
 
@@ -124,18 +126,19 @@ fi
 while (( "$#" )); do
     # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
-    basename=$( basename "$source" )
+    name=$( basename "$source" )
     # for comparing file/dir names, use the lowercased basename.
-    lowercase_basename=$( make_lowercase "$basename" )
+    lowercase_name=$( make_lowercase "$name" )
 
     # First, check the array of items that have been successfully trashed in this transaction.
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
-    # Note that trasehd_items will be an array of single-quoted strings, so lowercase_basename should also be wrapped for comparison.
-    if contains "${trashed_items[@]}" "'${lowercase_basename}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_basename}'"
+    # Note that trasehd_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
+    if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
     then
-        handle_name "$source" "$basename"
+        custom_name=$( handle_name "$source" "$name" )
+        handle_move "$source" "$custom_name"
     else
-        handle_move "$source" "$basename"
+        handle_move "$source" "$name"
     fi
 
     shift

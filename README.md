@@ -77,18 +77,3 @@ touch x
 trash x
 trash x
 ```
-
-- refactor this
-
-```bash
-        if has_no_extension "$source";
-        then
-            handle_move "$source" "${basename} ${time}"
-        else
-            name="${basename%.*}"
-            extension="${basename##*.}"
-            handle_move "$source" "${name} ${time}.${extension}"
-        fi
-```
-
-into a function
