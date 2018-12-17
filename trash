@@ -31,7 +31,12 @@ make_lowercase() {
 # Check to see if an array contains a value
 #########################################################
 contains() {
-    [[ "$1" =~ (^| )"$2"($| ) ]] && return 0 || return 1
+    arr=("$@")
+    ((last_idx=${#arr[@]} - 1))
+    item=${arr[last_idx]}
+    unset arr[last_idx]
+
+    [[ "${arr[@]}" =~ (^| )"'$item'"($| ) ]] && return 0 || return 1
 }
 
 #######################################################################################
@@ -61,7 +66,8 @@ handle_move() {
 
     # Push the trashed item into the array of trashed_items,
     # used when checking for the existence of an identically-named item.
-    trashed_items+=("$2")
+    lci=$( make_lowercase "$2" )
+    trashed_items+=("'$lci'")
 }
 
 usage="usage: trash source1 source2 ... sourceN"
@@ -94,11 +100,10 @@ while (( "$#" )); do
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ) # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
     basename=$( basename "$source" )
     lowercase_basename=$( make_lowercase "$basename" ) # for comparing file/dir names, use the basename.
-    lowercase_trashed_items=$( make_lowercase "${trashed_items[*]}" )
 
     # First, check the array of items that have been successfully trashed in this transaction.
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
-    if contains "$lowercase_trashed_items" "$lowercase_basename";
+    if contains "${trashed_items[@]}" "$lowercase_basename"
     then
         if has_no_extension "$source";
         then
@@ -109,7 +114,7 @@ while (( "$#" )); do
             handle_move "$source" "${name} ${time}.${extension}"
         fi
     else
-        if [[ "${lowercase_trash_content[@]}" =~ (^| )"'$lowercase_basename'"($| ) ]];
+        if contains "${lowercase_trash_content[@]}" "$lowercase_basename"
         then
             if has_no_extension "$source";
             then
