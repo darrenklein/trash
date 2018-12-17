@@ -50,6 +50,22 @@ has_no_extension() {
 }
 
 
+#######################################################################################
+# In the event that an item with the same name is already in either the trash
+# or the current batch of trashed items, construct its custom-formatted name.
+#######################################################################################
+handle_name() {
+    if has_no_extension "$1";
+    then
+        handle_move "$1" "${2} ${time}"
+    else
+        name="${2%.*}"
+        extension="${2##*.}"
+        handle_move "$1" "${name} ${time}.${extension}"
+    fi   
+}
+
+
 #########################################################
 # Move the target files/directories into the trash
 #########################################################
@@ -109,35 +125,17 @@ while (( "$#" )); do
     # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
     basename=$( basename "$source" )
-    lowercase_basename=$( make_lowercase "$basename" ) # for comparing file/dir names, use the basename.
+    # for comparing file/dir names, use the lowercased basename.
+    lowercase_basename=$( make_lowercase "$basename" )
 
     # First, check the array of items that have been successfully trashed in this transaction.
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
     # Note that trasehd_items will be an array of single-quoted strings, so lowercase_basename should also be wrapped for comparison.
-    if contains "${trashed_items[@]}" "'${lowercase_basename}'"
+    if contains "${trashed_items[@]}" "'${lowercase_basename}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_basename}'"
     then
-        if has_no_extension "$source";
-        then
-            handle_move "$source" "${basename} ${time}"
-        else
-            name="${basename%.*}"
-            extension="${basename##*.}"
-            handle_move "$source" "${name} ${time}.${extension}"
-        fi
+        handle_name "$source" "$basename"
     else
-        if contains "${lowercase_trash_content[@]}" "'${lowercase_basename}'"
-        then
-            if has_no_extension "$source";
-            then
-                handle_move "$source" "${basename} ${time}"
-            else
-                name="${basename%.*}"
-                extension="${basename##*.}"
-                handle_move "$source" "${name} ${time}.${extension}"
-            fi
-        else
-            handle_move "$source" "$basename"
-        fi
+        handle_move "$source" "$basename"
     fi
 
     shift
