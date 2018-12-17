@@ -72,18 +72,7 @@ handle_name() {
 # Move the target files/directories into the trash
 #########################################################
 handle_move() {
-    lowercase_name=$( make_lowercase "$2" )
-    # Count any duplicates in the batch of items that have been trashed during this operation;
-    # for example, $ trash x a/x y/x z/x
-    # This number will be appended to the modified file name as a unique identifier.
-    dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
-
-    if [ "$dup_count" -gt 0 ]
-    then
-        mv -fv "$1" ~/.Trash/"$2 ($dup_count)"
-    else
-        mv -fv "$1" ~/.Trash/"$2"
-    fi
+    mv -fv "$1" ~/.Trash/"$2"
 
     # Push the lowercased, single-quoted item into the array of trashed_items,
     # used when checking for the existence of an identically-named item.
@@ -132,10 +121,20 @@ while (( "$#" )); do
 
     # First, check the array of items that have been successfully trashed in this transaction.
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
-    # Note that trasehd_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
+    # Note that trashed_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
     if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
     then
-        name=$( handle_name "$source" "$name" )
+        # Construct the new item's name, which will include the time.
+        formatted_name=$( handle_name "$source" "$name" )
+        dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
+
+        # In the event that duplicate items are found in the current batch of trashed_items, append the count of duplicates.
+        if [ "$dup_count" -gt 0 ]
+        then
+            name="$formatted_name ($dup_count)"
+        else
+            name="$formatted_name"
+        fi
     fi
 
     handle_move "$source" "$name"
