@@ -36,6 +36,8 @@ contains() {
     item=${arr[last_idx]}
     unset arr[last_idx]
 
+    # Each item in the $arr, whether trash content or trashed items,
+    # will be a single-quoted string - wrap $item in single-quotes for comparison.
     [[ "${arr[@]}" =~ (^| )"'$item'"($| ) ]] && return 0 || return 1
 }
 
@@ -70,6 +72,10 @@ handle_move() {
     trashed_items+=("'$lci'")
 }
 
+
+#########################################################
+# Initialization
+#########################################################
 usage="usage: trash source1 source2 ... sourceN"
 time=$(date "+%-I.%M.%S %p") # Format the time like 9.32.16 PM - the "-" trims the leading 0.
 trash_content=$( ls ~/.Trash ) # Put the contents of the trash into an array.
@@ -77,6 +83,7 @@ trashed_items=() # An empty array to hold items trashed during this execution.
 lowercase_trash_content=()
 
 # Loop through the trash, lowercasing every item and wrapping it in single-quotes.
+# Single quotes allow for item name comparisons where names may contain spaces.
 for item in ~/.Trash/*; do
     basename=$( basename "$item" )
     lowercase_item=$( make_lowercase "$basename" )
@@ -92,6 +99,7 @@ then
     echo "$usage"
     exit 1
 fi
+
 
 #########################################################
 # Execution
