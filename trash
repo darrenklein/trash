@@ -127,7 +127,7 @@ while (( "$#" )); do
     # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
     name=$( basename "$source" )
-    # for comparing file/dir names, use the lowercased basename.
+    # for comparing file/dir names, use the lowercased name.
     lowercase_name=$( make_lowercase "$name" )
 
     # First, check the array of items that have been successfully trashed in this transaction.
@@ -135,11 +135,10 @@ while (( "$#" )); do
     # Note that trasehd_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
     if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
     then
-        custom_name=$( handle_name "$source" "$name" )
-        handle_move "$source" "$custom_name"
-    else
-        handle_move "$source" "$name"
+        name=$( handle_name "$source" "$name" )
     fi
+
+    handle_move "$source" "$name"
 
     shift
 done
