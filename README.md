@@ -67,3 +67,28 @@ trash index.html src scripts README.md
 ## Big ups
 
 Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project.
+
+## TODO
+
+- catch `mv` errors, like when trying to delete a non-existent file with a duplicate name -
+
+```bash
+touch x
+trash x
+trash x
+```
+
+- refactor this
+
+```bash
+        if has_no_extension "$source";
+        then
+            handle_move "$source" "${basename} ${time}"
+        else
+            name="${basename%.*}"
+            extension="${basename##*.}"
+            handle_move "$source" "${name} ${time}.${extension}"
+        fi
+```
+
+into a function

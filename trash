@@ -19,6 +19,7 @@
 # index 3:45 PM.html (1)
 # index 3:45 PM.html (2)
 
+
 #########################################################
 # Lowercase the names of trashed items and trash content
 # Used to compare item names and detect duplicates
@@ -26,6 +27,7 @@
 make_lowercase() {
     echo "$1" | tr "[:upper:]" "[:lower:]"
 }
+
 
 #########################################################
 # Check to see if an array contains a value
@@ -36,10 +38,9 @@ contains() {
     item=${arr[last_idx]}
     unset arr[last_idx]
 
-    # Each item in the $arr, whether trash content or trashed items,
-    # will be a single-quoted string - wrap $item in single-quotes for comparison.
-    [[ "${arr[@]}" =~ (^| )"'$item'"($| ) ]] && return 0 || return 1
+    [[ "${arr[@]}" =~ (^| )"$item"($| ) ]] && return 0 || return 1
 }
+
 
 #######################################################################################
 # Check to see if the target is a directory or a file with no extension
@@ -48,16 +49,16 @@ has_no_extension() {
     [[ -d "$1" || "$1" != *"."* ]] && return 0 || return 1   
 }
 
+
 #########################################################
 # Move the target files/directories into the trash
 #########################################################
 handle_move() {
     lowercase_name=$( make_lowercase "$2" )
-    lowercase_trashed_items=$( make_lowercase "${trashed_items[*]}" )
     # Count any duplicates in the batch of items that have been trashed during this operation;
     # for example, $ trash x a/x y/x z/x
     # This number will be appended to the modified file name as a unique identifier.
-    dup_count=$( grep -o "$lowercase_name" <<< "$lowercase_trashed_items" | wc -l | tr -d " " )
+    dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
 
     if [ "$dup_count" -gt 0 ]
     then
@@ -66,7 +67,7 @@ handle_move() {
         mv -fv "$1" ~/.Trash/"$2"
     fi
 
-    # Push the trashed item into the array of trashed_items,
+    # Push the lowercased, single-quoted item into the array of trashed_items,
     # used when checking for the existence of an identically-named item.
     lci=$( make_lowercase "$2" )
     trashed_items+=("'$lci'")
@@ -105,13 +106,15 @@ fi
 # Execution
 #########################################################
 while (( "$#" )); do
-    source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" ) # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
+    # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
+    source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
     basename=$( basename "$source" )
     lowercase_basename=$( make_lowercase "$basename" ) # for comparing file/dir names, use the basename.
 
     # First, check the array of items that have been successfully trashed in this transaction.
     # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
-    if contains "${trashed_items[@]}" "$lowercase_basename"
+    # Note that trasehd_items will be an array of single-quoted strings, so lowercase_basename should also be wrapped for comparison.
+    if contains "${trashed_items[@]}" "'${lowercase_basename}'"
     then
         if has_no_extension "$source";
         then
@@ -122,7 +125,7 @@ while (( "$#" )); do
             handle_move "$source" "${name} ${time}.${extension}"
         fi
     else
-        if contains "${lowercase_trash_content[@]}" "$lowercase_basename"
+        if contains "${lowercase_trash_content[@]}" "'${lowercase_basename}'"
         then
             if has_no_extension "$source";
             then
