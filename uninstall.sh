@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Author: Darren Klein
 # Github repo: https://github.com/darrenklein/trash
+# Version: 1.0.0
 
 read -p "Uninstall trash? [Y/n]: " answer
     answer=${answer:-Y}

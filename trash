@@ -1,37 +1,36 @@
 #!/usr/bin/env bash
 # Author: Darren Klein
 # Github repo: https://github.com/darrenklein/trash
+# Version: 1.0.0
 
 # A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
 # $ trash index.html scr scripts README.md
 # It will rename duplicate file/directories using the macOS convention of inserting/appending the time the duplicate resource was deleted.
-# For example, sequentially trashing two "index.html" files via `$ trash index.html`:
+# For example, sequentially trashing two "index.html" files via `$ trash PATH/TO/index.html` `$ trash OTHER/PATH/TO/index.html`:
 #
 # index.html
 # index 3:45 PM.html
 #
-# Trashing multiple items at once produces a behavior that is unique to this script, but I believe that it is a reasonable expectation;
-# Duplicate files in the same batch will initially have the time inserted/appended, but on finding additional duplicates in the batch of processed items,
-# a unique numeric identified will be added as well. For example, trashing multiple index.html files from different sources via `$ trash index.html test_1/index.html test_2/index.html test_3/index.html`:
+# Trashing multiple items at once produces a behavior that is unique to this script, but I believe is a reasonable expectation;
+# duplicate files in the same batch will initially have the time inserted/appended, but on finding additional duplicates in the batch of trashed items,
+# a sequential numeric identifier will be added as well. For example, trashing multiple index.html files from different sources via something like `$ trash index.html test_1/index.html test_2/index.html test_3/index.html`:
 #
 # index.html
 # index 3:45 PM.html
 # index 3:45 PM.html (1)
 # index 3:45 PM.html (2)
 
-
 #########################################################
+# Functions
+#########################################################
+
 # Lowercase the names of trashed items and trash content
 # Used to compare item names and detect duplicates
-#########################################################
 make_lowercase() {
     echo "$1" | tr "[:upper:]" "[:lower:]"
 }
 
-
-#########################################################
-# Check to see if an array contains a value
-#########################################################
+# Check to see if an array contains a value.
 contains() {
     arr=("$@")
     ((last_idx=${#arr[@]} - 1))
@@ -41,36 +40,25 @@ contains() {
     [[ "${arr[@]}" =~ (^| )"$item"($| ) ]] && return 0 || return 1
 }
 
-
-#######################################################################################
-# Check to see if the target is a directory or a file with no extension
-#######################################################################################
+# Check to see if the target is a directory or a file with no extension.
 has_no_extension() {
     [[ -d "$1" || "$1" != *"."* ]] && return 0 || return 1   
 }
 
-
-#######################################################################################
 # In the event that an item with the same name is already in either the trash
 # or the current batch of trashed items, construct its custom-formatted name.
-#######################################################################################
 handle_name() {
     if has_no_extension "$1";
     then
-        # handle_move "$1" "${2} ${time}"
         echo "${2} ${time}"
     else
         name="${2%.*}"
         extension="${2##*.}"
-        # handle_move "$1" "${name} ${time}.${extension}"
         echo "${name} ${time}.${extension}"
     fi   
 }
 
-
-#########################################################
-# Move the target files/directories into the trash
-#########################################################
+# Move the target files/directories into the trash.
 handle_move() {
     moved=$( mv -fv "$1" ~/.Trash/"$2" 2>/dev/null )
     [ $? != 0 ] && echo "Error: unable to trash $1" || echo "$moved"
@@ -91,7 +79,7 @@ trash_content=$( ls ~/.Trash ) # Put the contents of the trash into an array.
 trashed_items=() # An empty array to hold items trashed during this execution.
 lowercase_trash_content=()
 
-# Loop through the trash, lowercasing every item and wrapping it in single-quotes.
+# Loop through the trash, lowercasing every item and wrapping it in single quotes.
 # Single quotes allow for item name comparisons where names may contain spaces.
 for item in ~/.Trash/*; do
     name=$( basename "$item" )
@@ -114,14 +102,14 @@ fi
 # Execution
 #########################################################
 while (( "$#" )); do
-    # if the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing item in the trash.
+    # If the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing directory in the trash.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
     name=$( basename "$source" )
     # for comparing file/dir names, use the lowercased name.
     lowercase_name=$( make_lowercase "$name" )
 
-    # First, check the array of items that have been successfully trashed in this transaction.
-    # If there's a match, no need to check the trash content, as we can infer that there's already an item with that name in there.
+    # First, check the array of trashed_items that have already been handled in this transaction.
+    # If there's a match, no need to check the trash_content, as we can infer that there's already an item with that name in there.
     # Note that trashed_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
     if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
     then
