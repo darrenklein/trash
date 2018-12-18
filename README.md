@@ -67,13 +67,3 @@ trash index.html src scripts README.md
 ## Big ups
 
 Thanks to Alexander Epstein - https://github.com/alexanderepstein - whose **BashSnippets** helped to guide the structure of this project.
-
-## TODO
-
-- catch `mv` errors, like when trying to delete a non-existent file with a duplicate name -
-
-```bash
-touch x
-trash x
-trash x
-```
