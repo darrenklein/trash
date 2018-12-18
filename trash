@@ -61,12 +61,17 @@ handle_name() {
 # Move the target files/directories into the trash.
 handle_move() {
     moved=$( mv -fv "$1" ~/.Trash/"$2" 2>/dev/null )
-    [ $? != 0 ] && echo "trash: $1: unable to trash item" || echo "$moved"
 
-    # Push the lowercased, single-quoted item into the array of trashed_items,
-    # used when checking for the existence of an identically-named item.
-    lci=$( make_lowercase "$2" )
-    trashed_items+=("'$lci'")
+    if [ $? != 0 ]
+    then
+        echo "trash: $1: unable to trash item"
+    else
+        # Push the lowercased, single-quoted item into the array of trashed_items,
+        # used when checking for the existence of an identically-named item.
+        lci=$( make_lowercase "$2" )
+        trashed_items+=("'$lci'")
+        echo "$moved"
+    fi
 }
 
 
