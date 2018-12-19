@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Author: Darren Klein
 # Github repo: https://github.com/darrenklein/trash
-# Version: 1.0.0
+# Version: 1.0.1
 
 # A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
 # $ trash index.html scr scripts README.md
@@ -68,8 +68,7 @@ handle_move() {
     else
         # Push the lowercased, single-quoted item into the array of trashed_items,
         # used when checking for the existence of an identically-named item.
-        lci=$( make_lowercase "$2" )
-        trashed_items+=("'$lci'")
+        trashed_items+=("'$3'")
         echo "$moved"
     fi
 }
@@ -121,8 +120,8 @@ while (( "$#" )); do
         # Construct the new item's name, which will include the time.
         formatted_name=$( handle_name "$source" "$name" )
         # Lowercase the formatted_name, to check for its presence in the batch of trashed_items.
-        lowercase_formatted_name=$( make_lowercase "$formatted_name" )
-        dup_count=$( grep -o "$lowercase_formatted_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
+        lowercase_name=$( make_lowercase "$formatted_name" )
+        dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
 
         # In the event that duplicate items are found in the current batch of trashed_items, append the count of duplicates.
         if [ "$dup_count" -gt 0 ]
@@ -133,7 +132,7 @@ while (( "$#" )); do
         fi
     fi
 
-    handle_move "$source" "$name"
+    handle_move "$source" "$name" "$lowercase_name"
 
     shift
 done

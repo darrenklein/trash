@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Author: Darren Klein
 # Github repo: https://github.com/darrenklein/trash
-# Version: 1.0.0
+# Version: 1.0.1
 
 # Adapted with thanks, from https://github.com/alexanderepstein/Bash-Snippets/blob/master/install.sh
 read -p "Install trash? [Y/n]: " answer
