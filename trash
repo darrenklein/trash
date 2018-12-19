@@ -120,13 +120,14 @@ while (( "$#" )); do
     then
         # Construct the new item's name, which will include the time.
         formatted_name=$( handle_name "$source" "$name" )
-        dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
+        # Lowercase the formatted_name, to check for its presence in the batch of trashed_items.
+        lowercase_formatted_name=$( make_lowercase "$formatted_name" )
+        dup_count=$( grep -o "$lowercase_formatted_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
 
         # In the event that duplicate items are found in the current batch of trashed_items, append the count of duplicates.
-        if [ "$dup_count" -gt 1 ]
+        if [ "$dup_count" -gt 0 ]
         then
-            dup="$(( $dup_count - 1 ))"
-            name="$formatted_name ($dup)"
+            name="$formatted_name ($dup_count)"
         else
             name="$formatted_name"
         fi
