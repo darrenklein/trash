@@ -123,9 +123,10 @@ while (( "$#" )); do
         dup_count=$( grep -o "$lowercase_name" <<< "${trashed_items[*]}" | wc -l | tr -d " " )
 
         # In the event that duplicate items are found in the current batch of trashed_items, append the count of duplicates.
-        if [ "$dup_count" -gt 0 ]
+        if [ "$dup_count" -gt 1 ]
         then
-            name="$formatted_name ($dup_count)"
+            dup="$(( $dup_count - 1 ))"
+            name="$formatted_name ($dup)"
         else
             name="$formatted_name"
         fi
