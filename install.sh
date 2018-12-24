@@ -9,7 +9,14 @@ read -p "Install trash? [Y/n]: " answer
 
     if [[ "$answer" == [Yy] ]]; then
         echo "Installing trash..."
+
+        latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        git checkout $latest_tag 2>/dev/null
+
         chmod a+x trash
         cp trash /usr/local/bin > /dev/null 2>&1 || { echo "Failure!"; echo "Error copying file, try running install script as sudo."; exit 1; }
+
+        git checkout master 2>/dev/null
+
         echo "Successfully installed trash - happy trashing!"
     fi
