@@ -30,16 +30,6 @@ make_lowercase() {
     echo "$1" | tr "[:upper:]" "[:lower:]"
 }
 
-# Check to see if an array contains a value.
-contains() {
-    arr=("$@")
-    ((last_idx=${#arr[@]} - 1))
-    item=${arr[last_idx]}
-    unset arr[last_idx]
-
-    [[ "${arr[@]}" =~ (^| )"$item"($| ) ]] && return 0 || return 1
-}
-
 # Check to see if the target is a directory or a file with no extension.
 has_no_extension() {
     [[ -d "$1" || "$1" != *"."* ]] && return 0 || return 1   
@@ -73,6 +63,32 @@ handle_move() {
     fi
 }
 
+# Use binary search to see if an array contains a value.
+contains() {
+    arr=("$@")
+    ((last_idx=${#arr[@]} - 1))
+    item=${arr[last_idx]}
+    unset arr[last_idx]
+    length="${#arr[@]}"
+    start=0
+    stop="$((length - 1))"
+    middle="$(( ((start + stop) + (2 - 1)) / 2 ))"
+
+    while [[ ${arr[middle]} != $item && start -lt stop ]]
+    do
+        if [[ $item < ${arr[middle]} ]]
+        then
+            stop="$((middle - 1))"
+        else
+            start="$((middle + 1))"
+        fi
+
+        middle="$(( ((start + stop) + (2 - 1)) / 2 ))"
+    done
+
+    [[ ${arr[middle]} == $item ]] && return 0 || return 1 
+}
+
 
 #########################################################
 # Initialization
@@ -90,6 +106,10 @@ do
     lowercase_name=$( make_lowercase "$name" )
     lowercase_trash_content+=("'$lowercase_name'")
 done
+
+# https://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
+IFS=$'\n' sorted_trash_content=($(sort <<<"${lowercase_trash_content[*]}"))
+unset IFS
 
 
 #########################################################
@@ -113,10 +133,14 @@ do
     # for comparing file/dir names, use the lowercased name.
     lowercase_name=$( make_lowercase "$name" )
 
+    IFS=$'\n' sorted_trashed_items=($(sort <<<"${trashed_items[*]}"))
+    unset IFS
+
     # First, check the array of trashed_items that have already been handled in this transaction.
     # If there's a match, no need to check the trash_content, as we can infer that there's already an item with that name in there.
     # Note that trashed_items will be an array of single-quoted strings, so lowercase_name should also be wrapped for comparison.
-    if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
+    # if contains "${trashed_items[@]}" "'${lowercase_name}'" || contains "${lowercase_trash_content[@]}" "'${lowercase_name}'"
+    if contains "${sorted_trashed_items[@]}" "'${lowercase_name}'" || contains "${sorted_trash_content[@]}" "'${lowercase_name}'"
     then
         # Construct the new item's name, which will include the time.
         formatted_name=$( handle_name "$source" "$name" )
