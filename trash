@@ -48,7 +48,7 @@ has_no_extension() {
 # In the event that an item with the same name is already in either the trash
 # or the current batch of trashed items, construct its custom-formatted name.
 handle_name() {
-    if has_no_extension "$1";
+    if has_no_extension "$1"
     then
         echo "${2} ${time}"
     else
@@ -79,13 +79,13 @@ handle_move() {
 #########################################################
 usage="usage: trash source1 source2 ... sourceN"
 time=$(date "+%-I.%M.%S %p") # Format the time like 9.32.16 PM - the "-" trims the leading 0.
-trash_content=$( ls ~/.Trash ) # Put the contents of the trash into an array.
 trashed_items=() # An empty array to hold items trashed during this execution.
 lowercase_trash_content=()
 
 # Loop through the trash, lowercasing every item and wrapping it in single quotes.
 # Single quotes allow for item name comparisons where names may contain spaces.
-for item in ~/.Trash/*; do
+for item in ~/.Trash/*
+do
     name=$( basename "$item" )
     lowercase_name=$( make_lowercase "$name" )
     lowercase_trash_content+=("'$lowercase_name'")
@@ -105,7 +105,8 @@ fi
 #########################################################
 # Execution
 #########################################################
-while (( "$#" )); do
+while (( "$#" ))
+do
     # If the item is a directory and ends with a forward slash, strip the slash so it'll correctly match an existing directory in the trash.
     source=$( ( [ -d "$1" ] && [ "${1: -1}" == / ] ) && echo "${1%?}" || echo "${1}" )
     name=$( basename "$source" )
