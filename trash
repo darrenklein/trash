@@ -42,15 +42,15 @@ handle_name() {
     then
         echo "${2} ${time}"
     else
-        name="${2%.*}"
-        extension="${2##*.}"
+        local name="${2%.*}"
+        local extension="${2##*.}"
         echo "${name} ${time}.${extension}"
     fi   
 }
 
 # Move the target files/directories into the trash.
 handle_move() {
-    moved=$( mv -fv "$1" ~/.Trash/"$2" 2>/dev/null )
+    local moved=$( mv -fv "$1" ~/.Trash/"$2" 2>/dev/null )
 
     if [ $? != 0 ]
     then
@@ -65,14 +65,14 @@ handle_move() {
 
 # Use binary search to see if an array contains a value.
 contains() {
-    arr=("$@")
+    local arr=("$@")
     ((last_idx=${#arr[@]} - 1))
-    item=${arr[last_idx]}
+    local item=${arr[last_idx]}
     unset arr[last_idx]
-    length="${#arr[@]}"
-    start=0
-    stop="$((length - 1))"
-    middle="$(( ((start + stop) + (2 - 1)) / 2 ))"
+    local length="${#arr[@]}"
+    local start=0
+    local stop="$((length - 1))"
+    local middle="$(( ((start + stop) + (2 - 1)) / 2 ))"
 
     while [[ ${arr[middle]} != $item && start -lt stop ]]
     do
@@ -108,7 +108,8 @@ do
 done
 
 # https://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
-IFS=$'\n' sorted_trash_content=($(sort <<<"${lowercase_trash_content[*]}"))
+IFS=$'\n'
+sorted_trash_content=($(sort <<<"${lowercase_trash_content[*]}"))
 unset IFS
 
 
@@ -133,7 +134,8 @@ do
     # for comparing file/dir names, use the lowercased name.
     lowercase_name=$( make_lowercase "$name" )
 
-    IFS=$'\n' sorted_trashed_items=($(sort <<<"${trashed_items[*]}"))
+    IFS=$'\n'
+    sorted_trashed_items=($(sort <<<"${trashed_items[*]}"))
     unset IFS
 
     # First, check the array of trashed_items that have already been handled in this transaction.
