@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Author: Darren Klein
 # Github repo: https://github.com/darrenklein/trash
-# Version: 1.0.2
+# Version: 1.0.3
 
 # A safe alternative to rm/rmdir, trash can be called with any number of arguments, for example:
 # $ trash index.html scr scripts README.md
