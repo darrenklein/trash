@@ -107,6 +107,7 @@ do
     lowercase_trash_content+=("'$lowercase_name'")
 done
 
+# Sort the lowercased trash content so it can be used in the binary search, contains().
 # https://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
 IFS=$'\n'
 sorted_trash_content=($(sort <<<"${lowercase_trash_content[*]}"))
@@ -134,6 +135,8 @@ do
     # for comparing file/dir names, use the lowercased name.
     lowercase_name=$( make_lowercase "$name" )
 
+    # Sort the lowercased trashed items so they can be used in the binary search, contains().
+    # https://stackoverflow.com/questions/7442417/how-to-sort-an-array-in-bash
     IFS=$'\n'
     sorted_trashed_items=($(sort <<<"${trashed_items[*]}"))
     unset IFS
